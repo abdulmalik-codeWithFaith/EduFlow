@@ -3,21 +3,17 @@
 import { useState, useRef } from "react";
 import { motion, useInView, AnimatePresence, Variants } from "framer-motion";
 import {
-  CreditCard,
   UserCheck,
-  Users,
+  CreditCard,
   BarChart3,
   Bell,
-  ShieldCheck,
+  BookOpen,
+  Megaphone,
   ArrowRight,
   PlayCircle,
   Sparkles,
-  Zap,
-  Heart,
   Check,
   Star,
-  Tag,
-  HelpCircle,
   ChevronDown,
   Menu,
   X,
@@ -25,71 +21,38 @@ import {
   Facebook,
   Linkedin,
   Instagram,
-  Calendar,
+  School,
+  Users,
+  TrendingUp,
+  Shield,
+  Mail,
+  Phone,
+  MapPin,
   type LucideIcon,
 } from "lucide-react";
+import Link from "next/link";
 
-// ─── Animation Variants ───────────────────────────────────────────────────────
 
 const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 40 },
+  hidden: { opacity: 0, y: 36 },
   visible: (i: number = 0) => ({
     opacity: 1,
     y: 0,
     transition: {
-      duration: 0.6,
-      delay: i * 0.1,
+      duration: 0.65,
+      delay: i * 0.09,
       ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
     },
   }),
 };
 
-const staggerContainer: Variants = {
+const stagger: Variants = {
   hidden: {},
-  visible: {
-    transition: { staggerChildren: 0.1 },
-  },
+  visible: { transition: { staggerChildren: 0.1 } },
 };
 
-// ─── Types ────────────────────────────────────────────────────────────────────
 
-interface Feature {
-  icon: LucideIcon;
-  color: string;
-  title: string;
-  desc: string;
-}
-
-interface Plan {
-  name: string;
-  desc: string;
-  price: string;
-  sub: string;
-  popular: boolean;
-  items: string[];
-  cta: string;
-}
-
-interface Testimonial {
-  quote: string;
-  name: string;
-  role: string;
-  avatar: string;
-}
-
-interface Benefit {
-  title: string;
-  desc: string;
-}
-
-interface Faq {
-  q: string;
-  a: string;
-}
-
-// ─── Animated Section Wrapper ─────────────────────────────────────────────────
-
-function AnimatedSection({
+function Section({
   children,
   className = "",
 }: {
@@ -97,12 +60,11 @@ function AnimatedSection({
   className?: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-80px" });
-
+  const inView = useInView(ref, { once: true, margin: "-70px" });
   return (
     <motion.div
       ref={ref}
-      variants={staggerContainer}
+      variants={stagger}
       initial="hidden"
       animate={inView ? "visible" : "hidden"}
       className={className}
@@ -112,109 +74,118 @@ function AnimatedSection({
   );
 }
 
-// ─── Navbar ───────────────────────────────────────────────────────────────────
+
+function Badge({ icon: Icon, text }: { icon: LucideIcon; text: string }) {
+  return (
+    <motion.div
+      variants={fadeUp}
+      custom={0}
+      className="inline-flex items-center gap-2 px-4 py-1.5 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-full text-sm font-semibold mb-6"
+    >
+      <Icon className="w-3.5 h-3.5" />
+      {text}
+    </motion.div>
+  );
+}
+
+
+const navLinks = [
+  { label: "Features", href: "#features" },
+  { label: "How It Works", href: "#how-it-works" },
+  { label: "Pricing", href: "#pricing" },
+  { label: "Testimonials", href: "#testimonials" },
+  { label: "FAQ", href: "#faq" },
+] as const;
 
 function Navbar() {
-  const [mobileOpen, setMobileOpen] = useState<boolean>(false);
-  const links = ["Features", "Pricing", "Testimonials", "FAQ"] as const;
+  const [open, setOpen] = useState(false);
 
   return (
     <>
       <motion.nav
-        initial={{ y: -80, opacity: 0 }}
+        initial={{ y: -72, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{
-          duration: 0.6,
-          ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
-        }}
-        className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200"
+        transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
+        className="fixed top-0 inset-x-0 z-50 bg-white/90 backdrop-blur-lg border-b border-slate-100 shadow-sm"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-          {/* Logo */}
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-violet-600 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-violet-200">
-              E
+          <Link href="/" className="flex items-center gap-2.5">
+            <div className="w-9 h-9 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center shadow-md shadow-emerald-200">
+              <School className="w-5 h-5 text-white" />
             </div>
-            <span className="font-bold text-2xl text-slate-900 tracking-tight">
-              EduFlow
+            <span className="font-black text-xl text-slate-900 tracking-tight">
+              Edu<span className="text-emerald-500">Flow</span>
             </span>
-          </div>
+          </Link>
 
-          {/* Desktop Links */}
-          <div className="hidden md:flex items-center gap-8">
-            {links.map((l) => (
+          <div className="hidden lg:flex items-center gap-7">
+            {navLinks.map((l) => (
               <a
-                key={l}
-                href={`#${l.toLowerCase()}`}
-                className="text-slate-600 hover:text-slate-900 font-medium transition-colors text-sm"
+                key={l.label}
+                href={l.href}
+                className="text-slate-600 hover:text-slate-900 font-medium text-sm transition-colors"
               >
-                {l}
+                {l.label}
               </a>
             ))}
           </div>
 
-          {/* Desktop CTA */}
-          <div className="hidden md:flex items-center gap-4">
-            <a
-              href="#"
-              className="text-slate-600 hover:text-slate-900 font-medium text-sm transition-colors"
+          <div className="hidden lg:flex items-center gap-3">
+            <Link
+              href="/login"
+              className="text-slate-600 hover:text-slate-900 font-medium text-sm transition-colors px-3 py-2"
             >
-              Sign In
-            </a>
-            <motion.a
-              href="#"
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              className="px-5 py-2.5 bg-violet-600 hover:bg-violet-700 text-white font-medium rounded-lg shadow-md shadow-violet-200 transition-colors text-sm"
-            >
-              Start Free Trial
-            </motion.a>
+              Login
+            </Link>
+            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+              <Link
+                href="/register"
+                className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg text-sm shadow-md shadow-emerald-200 transition-colors"
+              >
+                Register School
+              </Link>
+            </motion.div>
           </div>
 
-          {/* Mobile Toggle */}
           <button
-            className="md:hidden p-2 text-slate-600"
-            onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label="Toggle mobile menu"
+            className="lg:hidden p-2 text-slate-600"
+            onClick={() => setOpen(!open)}
+            aria-label="Toggle menu"
           >
-            {mobileOpen ? (
-              <X className="w-6 h-6" />
-            ) : (
-              <Menu className="w-6 h-6" />
-            )}
+            {open ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
       </motion.nav>
 
-      {/* Mobile Menu */}
       <AnimatePresence>
-        {mobileOpen && (
+        {open && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, y: -16 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.25 }}
-            className="fixed top-16 left-0 right-0 z-40 bg-white border-b border-slate-200 shadow-xl px-6 py-6 flex flex-col gap-5"
+            exit={{ opacity: 0, y: -16 }}
+            transition={{ duration: 0.22 }}
+            className="fixed top-16 inset-x-0 z-40 bg-white border-b border-slate-200 shadow-xl px-6 py-6 flex flex-col gap-4 lg:hidden"
           >
-            {links.map((l) => (
+            {navLinks.map((l) => (
               <a
-                key={l}
-                href={`#${l.toLowerCase()}`}
-                onClick={() => setMobileOpen(false)}
-                className="text-slate-700 font-medium text-lg"
+                key={l.label}
+                href={l.href}
+                onClick={() => setOpen(false)}
+                className="text-slate-700 font-semibold text-base"
               >
-                {l}
+                {l.label}
               </a>
             ))}
-            <a href="#" className="text-slate-600 font-medium">
-              Sign In
-            </a>
-            <a
-              href="#"
-              className="px-5 py-3 bg-violet-600 text-white font-semibold rounded-lg text-center"
+            <hr className="border-slate-100" />
+            <Link href="/login" className="text-slate-600 font-medium">
+              Login
+            </Link>
+            <Link
+              href="/register"
+              className="px-5 py-3 bg-emerald-600 text-white font-bold rounded-lg text-center shadow-md"
             >
-              Start Free Trial
-            </a>
+              Register School
+            </Link>
           </motion.div>
         )}
       </AnimatePresence>
@@ -224,119 +195,180 @@ function Navbar() {
 
 // ─── Hero ─────────────────────────────────────────────────────────────────────
 
-const heroStats = [
-  { value: "500+", label: "Active Schools" },
-  { value: "50K+", label: "Students Managed" },
-  { value: "99.9%", label: "Uptime" },
-] as const;
-
 function Hero() {
   return (
-    <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-violet-50 via-white to-indigo-50 overflow-hidden">
-      <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
-        {/* Left */}
-        <div>
-          <motion.div
-            variants={fadeUp}
-            custom={0}
-            initial="hidden"
-            animate="visible"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-violet-100 text-violet-700 rounded-full text-sm font-medium mb-6"
-          >
-            <Sparkles className="w-4 h-4" />
-            Trusted by 500+ Schools Worldwide
-          </motion.div>
+    <section className="relative pt-28 pb-24 px-4 sm:px-6 lg:px-8 overflow-hidden bg-gradient-to-b from-slate-50 via-white to-white">
+      {/* Background decoration */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-bl from-emerald-100/60 via-teal-50/30 to-transparent rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-gradient-to-tr from-blue-50/50 to-transparent rounded-full blur-3xl" />
+        {/* Grid */}
+        <div
+          className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage:
+              "linear-gradient(#0f172a 1px, transparent 1px), linear-gradient(90deg, #0f172a 1px, transparent 1px)",
+            backgroundSize: "60px 60px",
+          }}
+        />
+      </div>
 
-          <motion.h1
-            variants={fadeUp}
-            custom={1}
-            initial="hidden"
-            animate="visible"
-            className="text-5xl lg:text-6xl font-extrabold text-slate-900 mb-6 leading-tight tracking-tight"
-          >
-            Modern School Management Made{" "}
-            <span className="bg-gradient-to-r from-violet-600 to-indigo-500 bg-clip-text text-transparent">
-              Simple
-            </span>
-          </motion.h1>
-
-          <motion.p
-            variants={fadeUp}
-            custom={2}
-            initial="hidden"
-            animate="visible"
-            className="text-xl text-slate-600 mb-8 leading-relaxed"
-          >
-            Streamline fee collection, track attendance, and manage your entire
-            school operations with our all-in-one SaaS platform. Save time,
-            reduce errors, and improve parent satisfaction.
-          </motion.p>
-
-          <motion.div
-            variants={fadeUp}
-            custom={3}
-            initial="hidden"
-            animate="visible"
-            className="flex flex-col sm:flex-row gap-4 mb-12"
-          >
-            <motion.a
-              href="#"
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-violet-600 hover:bg-violet-700 text-white font-semibold rounded-lg shadow-lg shadow-violet-200 transition-colors"
+      <div className="relative max-w-7xl mx-auto">
+        <div className="grid lg:grid-cols-2 gap-14 items-center">
+          {/* Left */}
+          <div>
+            <motion.div
+              variants={fadeUp}
+              custom={0}
+              initial="hidden"
+              animate="visible"
+              className="inline-flex items-center gap-2 px-4 py-1.5 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-full text-sm font-semibold mb-6"
             >
-              Start Free 14-Day Trial
-              <ArrowRight className="w-5 h-5" />
-            </motion.a>
-            <motion.a
-              href="#"
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white border-2 border-slate-200 hover:border-slate-300 text-slate-700 font-semibold rounded-lg transition-all"
-            >
-              <PlayCircle className="w-5 h-5" />
-              Watch Demo
-            </motion.a>
-          </motion.div>
+              <Sparkles className="w-3.5 h-3.5" />
+              Trusted by 500+ Schools Across Africa
+            </motion.div>
 
-          {/* Stats */}
-          <motion.div
-            variants={staggerContainer}
-            initial="hidden"
-            animate="visible"
-            className="grid grid-cols-3 gap-6"
-          >
-            {heroStats.map((s, i) => (
-              <motion.div key={s.label} variants={fadeUp} custom={i + 4}>
-                <div className="text-3xl font-extrabold text-slate-900 mb-1">
-                  {s.value}
-                </div>
-                <div className="text-sm text-slate-600">{s.label}</div>
+            <motion.h1
+              variants={fadeUp}
+              custom={1}
+              initial="hidden"
+              animate="visible"
+              className="text-5xl lg:text-[3.6rem] font-black text-slate-900 leading-[1.1] tracking-tight mb-6"
+            >
+              Manage Attendance,{" "}
+              <span className="relative">
+                <span className="relative z-10 text-emerald-600">Fees</span>
+                <span className="absolute bottom-1 left-0 w-full h-3 bg-emerald-100 -z-0 rounded" />
+              </span>{" "}
+              &amp; Results in{" "}
+              <span className="text-teal-600">One Platform</span>
+            </motion.h1>
+
+            <motion.p
+              variants={fadeUp}
+              custom={2}
+              initial="hidden"
+              animate="visible"
+              className="text-lg text-slate-500 leading-relaxed mb-8 max-w-xl"
+            >
+              EduFlow gives school administrators, teachers, and parents a
+              single command center — track attendance in real time, collect
+              fees online, publish results, and keep parents in the loop
+              automatically. No spreadsheets. No chaos.
+            </motion.p>
+
+            <motion.div
+              variants={fadeUp}
+              custom={3}
+              initial="hidden"
+              animate="visible"
+              className="flex flex-col sm:flex-row gap-3 mb-12"
+            >
+              <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+                <Link
+                  href="/register"
+                  className="inline-flex items-center justify-center gap-2 px-7 py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-200 transition-colors text-base"
+                >
+                  Start Free Trial
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
               </motion.div>
-            ))}
+              <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+                <a
+                  href="#how-it-works"
+                  className="inline-flex items-center justify-center gap-2 px-7 py-4 bg-white border-2 border-slate-200 hover:border-emerald-300 text-slate-700 font-bold rounded-xl transition-all text-base"
+                >
+                  <PlayCircle className="w-4 h-4 text-emerald-500" />
+                  See How It Works
+                </a>
+              </motion.div>
+            </motion.div>
+
+            {/* Social proof */}
+            <motion.div
+              variants={fadeUp}
+              custom={4}
+              initial="hidden"
+              animate="visible"
+              className="grid grid-cols-3 gap-5 border-t border-slate-100 pt-8"
+            >
+              {[
+                { n: "500+", label: "Schools" },
+                { n: "80K+", label: "Students" },
+                { n: "98%", label: "Satisfaction" },
+              ].map((s) => (
+                <div key={s.label}>
+                  <div className="text-2xl font-black text-slate-900">{s.n}</div>
+                  <div className="text-sm text-slate-500 mt-0.5">{s.label}</div>
+                </div>
+              ))}
+            </motion.div>
+          </div>
+
+          {/* Right — dashboard mockup */}
+          <motion.div
+            initial={{ opacity: 0, x: 50, scale: 0.96 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            transition={{ duration: 0.85, delay: 0.15, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
+            className="relative"
+          >
+            <div className="absolute -top-8 -right-8 w-64 h-64 bg-emerald-200/50 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-8 -left-8 w-64 h-64 bg-teal-200/40 rounded-full blur-3xl pointer-events-none" />
+
+            {/* Dashboard card */}
+            <div className="relative bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden">
+              {/* Header bar */}
+              <div className="bg-gradient-to-r from-emerald-600 to-teal-600 px-6 py-4 flex items-center gap-3">
+                <div className="flex gap-1.5">
+                  <div className="w-3 h-3 rounded-full bg-white/30" />
+                  <div className="w-3 h-3 rounded-full bg-white/30" />
+                  <div className="w-3 h-3 rounded-full bg-white/30" />
+                </div>
+                <div className="flex-1 bg-white/20 rounded-md h-5 w-40 mx-auto" />
+              </div>
+
+              {/* Stat cards */}
+              <div className="p-5 grid grid-cols-2 gap-3">
+                {[
+                  { label: "Total Students", value: "1,284", color: "bg-emerald-50 text-emerald-700", bar: "w-3/4 bg-emerald-400" },
+                  { label: "Fees Collected", value: "₦4.2M", color: "bg-blue-50 text-blue-700", bar: "w-2/3 bg-blue-400" },
+                  { label: "Attendance Today", value: "94.2%", color: "bg-violet-50 text-violet-700", bar: "w-4/5 bg-violet-400" },
+                  { label: "Outstanding Fees", value: "₦820K", color: "bg-orange-50 text-orange-700", bar: "w-1/2 bg-orange-400" },
+                ].map((card) => (
+                  <div key={card.label} className={`${card.color} rounded-xl p-4`}>
+                    <div className="text-xs font-semibold opacity-70 mb-1">{card.label}</div>
+                    <div className="text-xl font-black mb-2">{card.value}</div>
+                    <div className="h-1.5 bg-black/10 rounded-full">
+                      <div className={`h-full ${card.bar} rounded-full`} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Attendance row */}
+              <div className="px-5 pb-5">
+                <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
+                  <div className="text-xs font-bold text-slate-500 mb-3">RECENT ATTENDANCE — SS1A</div>
+                  {[
+                    { name: "Amara Johnson", status: "Present", dot: "bg-emerald-400" },
+                    { name: "David Okafor", status: "Absent", dot: "bg-red-400" },
+                    { name: "Faith Adeyemi", status: "Present", dot: "bg-emerald-400" },
+                  ].map((row) => (
+                    <div key={row.name} className="flex items-center justify-between py-2 border-b border-slate-100 last:border-0">
+                      <div className="flex items-center gap-2">
+                        <div className={`w-2 h-2 rounded-full ${row.dot}`} />
+                        <span className="text-sm font-medium text-slate-700">{row.name}</span>
+                      </div>
+                      <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${row.status === "Present" ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-600"}`}>
+                        {row.status}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </motion.div>
         </div>
-
-        {/* Right Image */}
-        <motion.div
-          initial={{ opacity: 0, x: 60, scale: 0.95 }}
-          animate={{ opacity: 1, x: 0, scale: 1 }}
-          transition={{
-            duration: 0.8,
-            delay: 0.2,
-            ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
-          }}
-          className="relative"
-        >
-          <div className="absolute -top-10 -right-10 w-72 h-72 bg-violet-200 rounded-full blur-3xl opacity-40 pointer-events-none" />
-          <div className="absolute -bottom-10 -left-10 w-72 h-72 bg-indigo-200 rounded-full blur-3xl opacity-40 pointer-events-none" />
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
-            alt="School Management Dashboard"
-            className="relative rounded-2xl shadow-2xl w-full h-auto"
-          />
-        </motion.div>
       </div>
     </section>
   );
@@ -344,210 +376,168 @@ function Hero() {
 
 // ─── Features ─────────────────────────────────────────────────────────────────
 
-const features: Feature[] = [
-  {
-    icon: CreditCard,
-    color: "violet",
-    title: "Automated Fee Management",
-    desc: "Collect fees online, send automated reminders, generate invoices, and track payments in real-time with zero manual effort.",
-  },
+interface FeatureCard {
+  icon: LucideIcon;
+  title: string;
+  desc: string;
+  accent: string;
+  iconBg: string;
+}
+
+const features: FeatureCard[] = [
   {
     icon: UserCheck,
-    color: "indigo",
-    title: "Digital Attendance Tracking",
-    desc: "Mark attendance digitally, generate reports instantly, and notify parents via SMS or WhatsApp automatically.",
+    title: "Attendance Tracking",
+    desc: "Mark attendance per class in seconds. Generate daily, weekly, and monthly reports. Parents get automatic SMS/WhatsApp alerts when a child is absent.",
+    accent: "border-t-emerald-500",
+    iconBg: "bg-emerald-100 text-emerald-600",
   },
   {
-    icon: Users,
-    color: "pink",
-    title: "Student & Teacher Management",
-    desc: "Manage student records, teacher profiles, class assignments, and academic performance all in one place.",
+    icon: CreditCard,
+    title: "Fee Management",
+    desc: "Create flexible fee structures, record payments, and identify defaulters instantly. Accept online payments and issue digital receipts automatically.",
+    accent: "border-t-blue-500",
+    iconBg: "bg-blue-100 text-blue-600",
   },
   {
-    icon: BarChart3,
-    color: "emerald",
-    title: "Advanced Analytics & Reports",
-    desc: "Get actionable insights with detailed reports on fees, attendance, performance, and school operations.",
+    icon: BookOpen,
+    title: "Result Management",
+    desc: "Teachers enter test and exam scores; the system computes final grades, class rankings, and generates printable report cards — zero manual calculation.",
+    accent: "border-t-violet-500",
+    iconBg: "bg-violet-100 text-violet-600",
   },
   {
     icon: Bell,
-    color: "orange",
-    title: "Parent Communication",
-    desc: "Send announcements, notifications, and updates to parents via SMS, WhatsApp, or email instantly.",
+    title: "Parent Notifications",
+    desc: "Keep parents informed with instant SMS and WhatsApp notifications for attendance, fees due, results published, and school announcements.",
+    accent: "border-t-orange-500",
+    iconBg: "bg-orange-100 text-orange-600",
   },
   {
-    icon: ShieldCheck,
-    color: "blue",
-    title: "Role-Based Access Control",
-    desc: "Secure access with role-based permissions for admins, teachers, and parents with complete data privacy.",
+    icon: BarChart3,
+    title: "Analytics Dashboard",
+    desc: "Understand your school at a glance. Track attendance trends, fee collection rates, and academic performance with beautiful, real-time charts.",
+    accent: "border-t-pink-500",
+    iconBg: "bg-pink-100 text-pink-600",
+  },
+  {
+    icon: Megaphone,
+    title: "Announcement System",
+    desc: "Send targeted announcements to teachers, students, or parents. Schedule broadcasts, pin important messages, and manage all communications centrally.",
+    accent: "border-t-teal-500",
+    iconBg: "bg-teal-100 text-teal-600",
   },
 ];
-
-const colorMap: Record<string, string> = {
-  violet: "bg-violet-100 text-violet-600",
-  indigo: "bg-indigo-100 text-indigo-600",
-  pink: "bg-pink-100 text-pink-600",
-  emerald: "bg-emerald-100 text-emerald-600",
-  orange: "bg-orange-100 text-orange-600",
-  blue: "bg-blue-100 text-blue-600",
-};
 
 function Features() {
   return (
     <section id="features" className="py-24 px-4 sm:px-6 lg:px-8 bg-white">
       <div className="max-w-7xl mx-auto">
-        <AnimatedSection className="text-center mb-16">
-          <motion.div
-            variants={fadeUp}
-            custom={0}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-violet-100 text-violet-700 rounded-full text-sm font-medium mb-4"
-          >
-            <Zap className="w-4 h-4" />
-            Powerful Features
-          </motion.div>
-          <motion.h2
-            variants={fadeUp}
-            custom={1}
-            className="text-4xl lg:text-5xl font-extrabold text-slate-900 mb-4 tracking-tight"
-          >
-            Everything You Need to Run Your School
+        <Section className="text-center mb-16">
+          <Badge icon={Sparkles} text="Everything Your School Needs" />
+          <motion.h2 variants={fadeUp} custom={1} className="text-4xl lg:text-5xl font-black text-slate-900 tracking-tight mb-4">
+            Six Powerful Modules,{" "}
+            <span className="text-emerald-600">One Platform</span>
           </motion.h2>
-          <motion.p
-            variants={fadeUp}
-            custom={2}
-            className="text-xl text-slate-600 max-w-3xl mx-auto"
-          >
-            From fee management to attendance tracking, we&apos;ve got all the
-            tools you need in one comprehensive platform.
+          <motion.p variants={fadeUp} custom={2} className="text-lg text-slate-500 max-w-2xl mx-auto">
+            Every feature is purpose-built for African schools — affordable,
+            reliable, and working even on slow internet connections.
           </motion.p>
-        </AnimatedSection>
+        </Section>
 
-        <AnimatedSection className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <Section className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((f, i) => (
             <motion.div
               key={f.title}
               variants={fadeUp}
               custom={i}
-              whileHover={{
-                y: -6,
-                boxShadow: "0 20px 40px -12px rgba(0,0,0,0.12)",
-              }}
-              className="bg-white border border-slate-200 rounded-2xl p-8 transition-shadow cursor-default"
+              whileHover={{ y: -5, boxShadow: "0 24px 48px -12px rgba(0,0,0,0.1)" }}
+              className={`bg-white border border-slate-200 border-t-4 ${f.accent} rounded-2xl p-7 transition-shadow cursor-default`}
             >
-              <div
-                className={`w-14 h-14 ${colorMap[f.color]} rounded-xl flex items-center justify-center mb-6`}
-              >
-                <f.icon className="w-7 h-7" />
+              <div className={`w-12 h-12 ${f.iconBg} rounded-xl flex items-center justify-center mb-5`}>
+                <f.icon className="w-6 h-6" />
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3">
-                {f.title}
-              </h3>
-              <p className="text-slate-600 leading-relaxed">{f.desc}</p>
+              <h3 className="text-lg font-bold text-slate-900 mb-2">{f.title}</h3>
+              <p className="text-slate-500 text-sm leading-relaxed">{f.desc}</p>
             </motion.div>
           ))}
-        </AnimatedSection>
+        </Section>
       </div>
     </section>
   );
 }
 
-// ─── Benefits ─────────────────────────────────────────────────────────────────
+// ─── How It Works ─────────────────────────────────────────────────────────────
 
-const benefits: Benefit[] = [
+const steps = [
   {
-    title: "Save 20+ Hours Per Week",
-    desc: "Automate repetitive tasks and focus on what matters - educating students.",
+    num: "01",
+    title: "Register Your School",
+    desc: "Sign up in under 5 minutes. Verify your email, get approved, and your school dashboard is live. No IT team needed.",
+    icon: School,
+    color: "bg-emerald-500",
   },
   {
-    title: "Reduce Fee Collection Time by 80%",
-    desc: "Online payments and automated reminders ensure faster fee collection.",
+    num: "02",
+    title: "Add Teachers & Students",
+    desc: "Bulk-import students via CSV or add them one by one. Assign teachers to classes and subjects. Set up your fee structures.",
+    icon: Users,
+    color: "bg-blue-500",
   },
   {
-    title: "Improve Parent Satisfaction",
-    desc: "Real-time updates and transparent communication keep parents happy and informed.",
+    num: "03",
+    title: "Track Daily Operations",
+    desc: "Teachers mark attendance on any device. Parents receive instant alerts. Fees are tracked automatically. Everything syncs in real time.",
+    icon: TrendingUp,
+    color: "bg-violet-500",
   },
   {
-    title: "Zero Technical Knowledge Required",
-    desc: "Intuitive interface that anyone can use - no training needed.",
+    num: "04",
+    title: "Generate Reports & Results",
+    desc: "At term end, generate complete report cards, fee summaries, and attendance reports. Export to PDF or Excel in one click.",
+    icon: BarChart3,
+    color: "bg-orange-500",
   },
 ];
 
-function Benefits() {
+function HowItWorks() {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
-    <section className="py-24 px-4 sm:px-6 lg:px-8 bg-slate-50">
-      <div
-        ref={ref}
-        className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center"
-      >
-        <motion.div
-          initial={{ opacity: 0, x: -50 }}
-          animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: -50 }}
-          transition={{
-            duration: 0.7,
-            ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
-          }}
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
-            alt="School Benefits"
-            className="rounded-2xl shadow-2xl w-full h-auto"
-          />
-        </motion.div>
-
-        <motion.div
-          initial="hidden"
-          animate={inView ? "visible" : "hidden"}
-          variants={staggerContainer}
-        >
-          <motion.div
-            variants={fadeUp}
-            custom={0}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-violet-100 text-violet-700 rounded-full text-sm font-medium mb-4"
-          >
-            <Heart className="w-4 h-4" />
-            Why Schools Love Us
+    <section id="how-it-works" className="py-24 px-4 sm:px-6 lg:px-8 bg-slate-950">
+      <div className="max-w-7xl mx-auto">
+        <Section className="text-center mb-16">
+          <motion.div variants={fadeUp} custom={0} className="inline-flex items-center gap-2 px-4 py-1.5 bg-emerald-950 border border-emerald-800 text-emerald-400 rounded-full text-sm font-semibold mb-6">
+            <TrendingUp className="w-3.5 h-3.5" />
+            Up & Running in Minutes
           </motion.div>
-          <motion.h2
-            variants={fadeUp}
-            custom={1}
-            className="text-4xl font-extrabold text-slate-900 mb-6 tracking-tight"
-          >
-            Built for Modern Schools, Loved by Everyone
+          <motion.h2 variants={fadeUp} custom={1} className="text-4xl lg:text-5xl font-black text-white tracking-tight mb-4">
+            How EduFlow Works
           </motion.h2>
-          <motion.p
-            variants={fadeUp}
-            custom={2}
-            className="text-lg text-slate-600 mb-10"
-          >
-            EduFlow is designed to make school management effortless for
-            administrators, teachers, and parents alike.
+          <motion.p variants={fadeUp} custom={2} className="text-lg text-slate-400 max-w-2xl mx-auto">
+            Four simple steps to transform how your school operates — no technical expertise required.
           </motion.p>
+        </Section>
 
-          <div className="space-y-7">
-            {benefits.map((b, i) => (
-              <motion.div
-                key={b.title}
-                variants={fadeUp}
-                custom={i + 3}
-                className="flex items-start gap-4"
-              >
-                <div className="w-10 h-10 bg-violet-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Check className="w-5 h-5 text-violet-600" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-slate-900 mb-1">
-                    {b.title}
-                  </h3>
-                  <p className="text-slate-600">{b.desc}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
+        <div ref={ref} className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {steps.map((s, i) => (
+            <motion.div
+              key={s.num}
+              initial={{ opacity: 0, y: 40 }}
+              animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+              transition={{ duration: 0.6, delay: i * 0.12, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
+              className="relative bg-slate-900 border border-slate-800 rounded-2xl p-7"
+            >
+              <div className="text-5xl font-black text-slate-800 mb-4">{s.num}</div>
+              <div className={`w-11 h-11 ${s.color} rounded-xl flex items-center justify-center mb-5 shadow-lg`}>
+                <s.icon className="w-5 h-5 text-white" />
+              </div>
+              <h3 className="text-lg font-bold text-white mb-2">{s.title}</h3>
+              <p className="text-slate-400 text-sm leading-relaxed">{s.desc}</p>
+            </motion.div>
+          ))}
+        </div>
       </div>
     </section>
   );
@@ -555,101 +545,80 @@ function Benefits() {
 
 // ─── Testimonials ─────────────────────────────────────────────────────────────
 
-const testimonials: Testimonial[] = [
+const testimonials = [
   {
-    quote:
-      "EduFlow transformed our school operations. Fee collection is now seamless, and parents love the real-time updates. Highly recommended!",
-    name: "Sarah Johnson",
-    role: "Principal, Springfield High",
-    avatar:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+    quote: "EduFlow cut our fee collection time by 70%. Parents can now pay online and we get instant confirmation. It's been a game changer for our bursar's office.",
+    name: "Mrs. Chidinma Okonkwo",
+    role: "Principal",
+    school: "Sunrise International School, Lagos",
+    rating: 5,
+    avatar: "CO",
+    avatarColor: "bg-emerald-500",
   },
   {
-    quote:
-      "As a teacher, marking attendance is now so easy. The automated parent notifications save me hours every week. Game changer!",
-    name: "Michael Chen",
-    role: "Teacher, Riverside Academy",
-    avatar:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+    quote: "Marking attendance used to take 20 minutes per class. Now it takes 2 minutes and parents get notified automatically. My teachers love it.",
+    name: "Mr. Ibrahim Musa",
+    role: "School Administrator",
+    school: "Al-Noor Academy, Abuja",
+    rating: 5,
+    avatar: "IM",
+    avatarColor: "bg-blue-500",
   },
   {
-    quote:
-      "I can track my child's attendance and pay fees online. The transparency and convenience are amazing. Thank you EduFlow!",
-    name: "Emily Rodriguez",
-    role: "Parent",
-    avatar:
-      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+    quote: "The result management module is brilliant. No more manual calculations or spreadsheet errors. Report cards are generated with one click at end of term.",
+    name: "Dr. Adaobi Nwosu",
+    role: "Head Teacher",
+    school: "Greenfield College, Enugu",
+    rating: 5,
+    avatar: "AN",
+    avatarColor: "bg-violet-500",
   },
 ];
 
 function Testimonials() {
   return (
-    <section
-      id="testimonials"
-      className="py-24 px-4 sm:px-6 lg:px-8 bg-white"
-    >
+    <section id="testimonials" className="py-24 px-4 sm:px-6 lg:px-8 bg-slate-50">
       <div className="max-w-7xl mx-auto">
-        <AnimatedSection className="text-center mb-16">
-          <motion.div
-            variants={fadeUp}
-            custom={0}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-violet-100 text-violet-700 rounded-full text-sm font-medium mb-4"
-          >
-            <Star className="w-4 h-4" />
-            Testimonials
-          </motion.div>
-          <motion.h2
-            variants={fadeUp}
-            custom={1}
-            className="text-4xl lg:text-5xl font-extrabold text-slate-900 mb-4 tracking-tight"
-          >
-            Loved by Schools Worldwide
+        <Section className="text-center mb-16">
+          <Badge icon={Star} text="School Reviews" />
+          <motion.h2 variants={fadeUp} custom={1} className="text-4xl lg:text-5xl font-black text-slate-900 tracking-tight mb-4">
+            Schools That Trust EduFlow
           </motion.h2>
-          <motion.p
-            variants={fadeUp}
-            custom={2}
-            className="text-xl text-slate-600 max-w-3xl mx-auto"
-          >
-            See what school administrators, teachers, and parents are saying
-            about EduFlow.
+          <motion.p variants={fadeUp} custom={2} className="text-lg text-slate-500 max-w-2xl mx-auto">
+            Hear directly from the administrators, teachers, and principals who run their schools on EduFlow every day.
           </motion.p>
-        </AnimatedSection>
+        </Section>
 
-        <AnimatedSection className="grid md:grid-cols-3 gap-8">
+        <Section className="grid md:grid-cols-3 gap-7">
           {testimonials.map((t, i) => (
             <motion.div
               key={t.name}
               variants={fadeUp}
               custom={i}
               whileHover={{ y: -4 }}
-              className="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm"
+              className="bg-white border border-slate-200 rounded-2xl p-7 shadow-sm"
             >
-              <div className="flex gap-1 mb-4">
-                {Array.from({ length: 5 }).map((_, j) => (
-                  <Star
-                    key={j}
-                    className="w-5 h-5 text-yellow-400 fill-yellow-400"
-                  />
+              <div className="flex gap-1 mb-5">
+                {Array.from({ length: t.rating }).map((_, j) => (
+                  <Star key={j} className="w-4 h-4 text-amber-400 fill-amber-400" />
                 ))}
               </div>
-              <p className="text-slate-600 mb-6 leading-relaxed">
+              <p className="text-slate-600 text-sm leading-relaxed mb-6 italic">
                 &ldquo;{t.quote}&rdquo;
               </p>
               <div className="flex items-center gap-3">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={t.avatar}
-                  alt={t.name}
-                  className="w-12 h-12 rounded-full object-cover"
-                />
+                <div className={`w-11 h-11 ${t.avatarColor} rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0`}>
+                  {t.avatar}
+                </div>
                 <div>
-                  <div className="font-semibold text-slate-900">{t.name}</div>
-                  <div className="text-sm text-slate-500">{t.role}</div>
+                  <div className="font-bold text-slate-900 text-sm">{t.name}</div>
+                  <div className="text-xs text-slate-500">{t.role}</div>
+                  <div className="text-xs text-emerald-600 font-semibold mt-0.5">{t.school}</div>
                 </div>
               </div>
             </motion.div>
           ))}
-        </AnimatedSection>
+        </Section>
       </div>
     </section>
   );
@@ -657,164 +626,154 @@ function Testimonials() {
 
 // ─── Pricing ──────────────────────────────────────────────────────────────────
 
-const plans: Plan[] = [
+interface PricingPlan {
+  name: string;
+  price: string;
+  period: string;
+  tagline: string;
+  items: string[];
+  popular: boolean;
+  cta: string;
+  ctaHref: string;
+}
+
+const plans: PricingPlan[] = [
   {
-    name: "Starter",
-    desc: "Perfect for small schools",
-    price: "$49",
-    sub: "Up to 100 students",
-    popular: false,
+    name: "Basic",
+    price: "Free",
+    period: "14-day trial",
+    tagline: "Perfect for small schools getting started",
     items: [
-      "Fee Management",
-      "Attendance Tracking",
-      "Basic Reports",
-      "Email Support",
+      "Up to 200 students",
+      "Attendance tracking",
+      "Student management",
+      "Basic reports (PDF)",
+      "1 admin account",
+      "Email support",
     ],
+    popular: false,
     cta: "Start Free Trial",
+    ctaHref: "/register",
   },
   {
-    name: "Professional",
-    desc: "For growing schools",
-    price: "$99",
-    sub: "Up to 500 students",
-    popular: true,
+    name: "Premium",
+    price: "₦25,000",
+    period: "per term",
+    tagline: "Everything growing schools need",
     items: [
-      "Everything in Starter",
-      "Advanced Analytics",
-      "SMS Notifications",
-      "Priority Support",
-      "Custom Reports",
+      "Unlimited students",
+      "SMS & WhatsApp notifications",
+      "Online fee payments",
+      "Advanced analytics & charts",
+      "Result generator & report cards",
+      "Announcement system",
+      "Multi-teacher access",
+      "Priority support",
+      "Data export (PDF + Excel)",
     ],
-    cta: "Start Free Trial",
+    popular: true,
+    cta: "Get Premium",
+    ctaHref: "/register?plan=premium",
   },
   {
     name: "Enterprise",
-    desc: "For large institutions",
-    price: "$249",
-    sub: "Unlimited students",
-    popular: false,
+    price: "Custom",
+    period: "pricing",
+    tagline: "For school networks & large institutions",
     items: [
-      "Everything in Professional",
-      "Multi-Branch Support",
-      "WhatsApp Integration",
-      "Dedicated Account Manager",
-      "Custom Integrations",
+      "Everything in Premium",
+      "Multi-branch management",
+      "Dedicated account manager",
+      "Custom integrations & API",
+      "White-label option",
+      "SLA & uptime guarantee",
+      "Custom training sessions",
     ],
+    popular: false,
     cta: "Contact Sales",
+    ctaHref: "/contact",
   },
 ];
 
 function Pricing() {
   return (
-    <section id="pricing" className="py-24 px-4 sm:px-6 lg:px-8 bg-slate-50">
+    <section id="pricing" className="py-24 px-4 sm:px-6 lg:px-8 bg-white">
       <div className="max-w-7xl mx-auto">
-        <AnimatedSection className="text-center mb-16">
-          <motion.div
-            variants={fadeUp}
-            custom={0}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-violet-100 text-violet-700 rounded-full text-sm font-medium mb-4"
-          >
-            <Tag className="w-4 h-4" />
-            Simple Pricing
-          </motion.div>
-          <motion.h2
-            variants={fadeUp}
-            custom={1}
-            className="text-4xl lg:text-5xl font-extrabold text-slate-900 mb-4 tracking-tight"
-          >
-            Choose the Perfect Plan for Your School
+        <Section className="text-center mb-16">
+          <Badge icon={Shield} text="Transparent Pricing" />
+          <motion.h2 variants={fadeUp} custom={1} className="text-4xl lg:text-5xl font-black text-slate-900 tracking-tight mb-4">
+            Simple Plans,{" "}
+            <span className="text-emerald-600">No Hidden Fees</span>
           </motion.h2>
-          <motion.p
-            variants={fadeUp}
-            custom={2}
-            className="text-xl text-slate-600 max-w-3xl mx-auto"
-          >
-            No hidden fees. No surprises. Cancel anytime.
+          <motion.p variants={fadeUp} custom={2} className="text-lg text-slate-500 max-w-2xl mx-auto">
+            Start free and scale as your school grows. All plans include a 14-day full-access trial.
           </motion.p>
-        </AnimatedSection>
+        </Section>
 
-        <AnimatedSection className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <Section className="grid md:grid-cols-3 gap-7 max-w-6xl mx-auto">
           {plans.map((p, i) => (
             <motion.div
               key={p.name}
               variants={fadeUp}
               custom={i}
-              whileHover={{ y: -6 }}
-              className={`relative rounded-2xl p-8 transition-shadow ${
+              whileHover={{ y: -5 }}
+              className={`relative rounded-2xl p-8 transition-all ${
                 p.popular
-                  ? "bg-violet-600 border-2 border-violet-600 shadow-2xl shadow-violet-200"
+                  ? "bg-gradient-to-b from-emerald-600 to-teal-700 text-white shadow-2xl shadow-emerald-200"
                   : "bg-white border border-slate-200 hover:shadow-xl"
               }`}
             >
               {p.popular && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                  <span className="px-4 py-1 bg-yellow-400 text-slate-900 text-sm font-bold rounded-full shadow-md">
-                    MOST POPULAR
+                <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
+                  <span className="px-4 py-1 bg-amber-400 text-slate-900 text-xs font-black rounded-full shadow-md uppercase tracking-wide">
+                    Most Popular
                   </span>
                 </div>
               )}
 
-              <div className="text-center mb-8">
-                <h3
-                  className={`text-2xl font-bold mb-2 ${p.popular ? "text-white" : "text-slate-900"}`}
-                >
+              <div className="mb-7">
+                <h3 className={`text-lg font-black mb-1 ${p.popular ? "text-white" : "text-slate-900"}`}>
                   {p.name}
                 </h3>
-                <p
-                  className={`mb-6 text-sm ${p.popular ? "text-violet-100" : "text-slate-500"}`}
-                >
-                  {p.desc}
+                <p className={`text-xs mb-5 ${p.popular ? "text-emerald-100" : "text-slate-500"}`}>
+                  {p.tagline}
                 </p>
-                <div className="mb-1">
-                  <span
-                    className={`text-5xl font-extrabold ${p.popular ? "text-white" : "text-slate-900"}`}
-                  >
+                <div className="flex items-end gap-1 mb-1">
+                  <span className={`text-4xl font-black ${p.popular ? "text-white" : "text-slate-900"}`}>
                     {p.price}
                   </span>
-                  <span
-                    className={
-                      p.popular ? "text-violet-100" : "text-slate-500"
-                    }
-                  >
-                    /month
-                  </span>
                 </div>
-                <p
-                  className={`text-sm ${p.popular ? "text-violet-200" : "text-slate-400"}`}
-                >
-                  {p.sub}
-                </p>
+                <div className={`text-sm ${p.popular ? "text-emerald-100" : "text-slate-400"}`}>
+                  {p.period}
+                </div>
               </div>
 
-              <ul className="space-y-4 mb-8">
+              <ul className="space-y-3 mb-8">
                 {p.items.map((item) => (
-                  <li key={item} className="flex items-center gap-3">
+                  <li key={item} className="flex items-start gap-2.5 text-sm">
                     <Check
-                      className={`w-5 h-5 flex-shrink-0 ${p.popular ? "text-white" : "text-emerald-500"}`}
+                      className={`w-4 h-4 flex-shrink-0 mt-0.5 ${p.popular ? "text-emerald-200" : "text-emerald-500"}`}
                     />
-                    <span
-                      className={p.popular ? "text-white" : "text-slate-600"}
-                    >
-                      {item}
-                    </span>
+                    <span className={p.popular ? "text-white/90" : "text-slate-600"}>{item}</span>
                   </li>
                 ))}
               </ul>
 
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className={`w-full py-3 px-4 font-semibold rounded-lg transition-colors ${
-                  p.popular
-                    ? "bg-white hover:bg-slate-50 text-violet-600"
-                    : "bg-slate-100 hover:bg-slate-200 text-slate-900"
-                }`}
-              >
-                {p.cta}
-              </motion.button>
+              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                <Link
+                  href={p.ctaHref}
+                  className={`block w-full py-3 px-4 font-bold rounded-xl text-center text-sm transition-colors ${
+                    p.popular
+                      ? "bg-white hover:bg-slate-50 text-emerald-700"
+                      : "bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-100"
+                  }`}
+                >
+                  {p.cta}
+                </Link>
+              </motion.div>
             </motion.div>
           ))}
-        </AnimatedSection>
+        </Section>
       </div>
     </section>
   );
@@ -822,181 +781,156 @@ function Pricing() {
 
 // ─── FAQ ──────────────────────────────────────────────────────────────────────
 
-const faqs: Faq[] = [
+const faqs = [
   {
-    q: "How does the free trial work?",
-    a: "You get full access to all features for 14 days. No credit card required. Cancel anytime during the trial period with no charges.",
+    q: "How does the 14-day free trial work?",
+    a: "You get full access to all Premium features for 14 days — no credit card required. After the trial, choose a plan that fits your school or stay on the free Basic tier.",
   },
   {
-    q: "Can I change plans later?",
-    a: "Absolutely! You can upgrade or downgrade your plan at any time. Changes take effect at the start of your next billing cycle.",
+    q: "Can multiple teachers use EduFlow at the same time?",
+    a: "Yes! Premium and Enterprise plans support unlimited teacher accounts. Each teacher only sees their assigned classes and subjects, ensuring data privacy.",
   },
   {
-    q: "Is my data secure?",
-    a: "Yes. We use enterprise-grade encryption, regular backups, and comply with GDPR and local data privacy regulations to keep your school's data safe.",
+    q: "Is my school's data secure?",
+    a: "Absolutely. All data is encrypted in transit and at rest. We run daily backups, and your data is stored on secure cloud servers. We never share your data with third parties.",
   },
   {
-    q: "Do you offer training?",
-    a: "Yes! All plans include onboarding support. Professional and Enterprise plans include live training sessions and dedicated onboarding.",
+    q: "Can parents track their child's attendance and fees?",
+    a: "Yes. Each parent has a dedicated portal where they can see their child's attendance history, outstanding fees, results, and school announcements — all in real time.",
   },
   {
-    q: "What payment methods do you accept?",
-    a: "We accept all major credit cards, bank transfers, and popular digital payment methods. Contact us for custom invoicing on Enterprise plans.",
+    q: "Does EduFlow work on mobile phones?",
+    a: "EduFlow is fully responsive and works on any device — phones, tablets, or computers. Teachers can mark attendance right from their smartphones without any app download.",
+  },
+  {
+    q: "Can I import existing student data?",
+    a: "Yes. You can bulk-import students and teachers using a CSV template we provide. Most schools are fully set up within one day.",
   },
 ];
 
 function FAQ() {
-  const [open, setOpen] = useState<number | null>(0);
+  const [open, setOpen] = useState<number | null>(null);
 
   return (
-    <section id="faq" className="py-24 px-4 sm:px-6 lg:px-8 bg-white">
-      <div className="max-w-4xl mx-auto">
-        <AnimatedSection className="text-center mb-16">
-          <motion.div
-            variants={fadeUp}
-            custom={0}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-violet-100 text-violet-700 rounded-full text-sm font-medium mb-4"
-          >
-            <HelpCircle className="w-4 h-4" />
-            FAQ
-          </motion.div>
-          <motion.h2
-            variants={fadeUp}
-            custom={1}
-            className="text-4xl lg:text-5xl font-extrabold text-slate-900 mb-4 tracking-tight"
-          >
+    <section id="faq" className="py-24 px-4 sm:px-6 lg:px-8 bg-slate-50">
+      <div className="max-w-3xl mx-auto">
+        <Section className="text-center mb-14">
+          <Badge icon={Shield} text="Common Questions" />
+          <motion.h2 variants={fadeUp} custom={1} className="text-4xl lg:text-5xl font-black text-slate-900 tracking-tight mb-4">
             Frequently Asked Questions
           </motion.h2>
-          <motion.p
-            variants={fadeUp}
-            custom={2}
-            className="text-xl text-slate-600"
-          >
-            Everything you need to know about EduFlow
+          <motion.p variants={fadeUp} custom={2} className="text-lg text-slate-500">
+            Everything you need to know before getting started.
           </motion.p>
-        </AnimatedSection>
+        </Section>
 
-        <AnimatedSection className="space-y-3">
+        <Section className="space-y-3">
           {faqs.map((f, i) => (
             <motion.div
               key={f.q}
               variants={fadeUp}
               custom={i}
-              className="bg-slate-50 border border-slate-200 rounded-2xl overflow-hidden"
+              className="bg-white border border-slate-200 rounded-2xl overflow-hidden"
             >
               <button
                 className="w-full flex items-center justify-between text-left px-6 py-5 gap-4"
                 onClick={() => setOpen(open === i ? null : i)}
               >
-                <h3 className="font-semibold text-lg text-slate-900">{f.q}</h3>
+                <h3 className="font-bold text-slate-900 text-sm">{f.q}</h3>
                 <motion.div
                   animate={{ rotate: open === i ? 180 : 0 }}
-                  transition={{ duration: 0.25 }}
+                  transition={{ duration: 0.22 }}
                   className="flex-shrink-0"
                 >
-                  <ChevronDown className="w-5 h-5 text-slate-500" />
+                  <ChevronDown className="w-5 h-5 text-slate-400" />
                 </motion.div>
               </button>
 
               <AnimatePresence initial={false}>
                 {open === i && (
                   <motion.div
-                    key="content"
+                    key="body"
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: "auto", opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    transition={{
-                      duration: 0.3,
-                      ease: [0.22, 1, 0.36, 1] as [
-                        number,
-                        number,
-                        number,
-                        number,
-                      ],
-                    }}
+                    transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
                     className="overflow-hidden"
                   >
-                    <p className="px-6 pb-5 text-slate-600 leading-relaxed">
-                      {f.a}
-                    </p>
+                    <p className="px-6 pb-5 text-slate-500 text-sm leading-relaxed">{f.a}</p>
                   </motion.div>
                 )}
               </AnimatePresence>
             </motion.div>
           ))}
-        </AnimatedSection>
+        </Section>
       </div>
     </section>
   );
 }
 
-// ─── CTA ──────────────────────────────────────────────────────────────────────
+// ─── CTA Banner ───────────────────────────────────────────────────────────────
 
 function CTA() {
   const ref = useRef<HTMLElement>(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
-    <section
-      ref={ref}
-      className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-violet-600 to-indigo-600"
-    >
-      <div className="max-w-4xl mx-auto text-center">
+    <section ref={ref} className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-700 relative overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full blur-3xl" />
+      </div>
+
+      <div className="relative max-w-4xl mx-auto text-center">
         <motion.h2
-          variants={fadeUp}
-          custom={0}
-          initial="hidden"
+          variants={fadeUp} custom={0} initial="hidden"
           animate={inView ? "visible" : "hidden"}
-          className="text-4xl lg:text-5xl font-extrabold text-white mb-6 tracking-tight"
+          className="text-4xl lg:text-5xl font-black text-white tracking-tight mb-5"
         >
-          Ready to Transform Your School?
+          Your School Deserves Better Tools.
+          <br />
+          <span className="text-emerald-200">Start Today — It&apos;s Free.</span>
         </motion.h2>
+
         <motion.p
-          variants={fadeUp}
-          custom={1}
-          initial="hidden"
+          variants={fadeUp} custom={1} initial="hidden"
           animate={inView ? "visible" : "hidden"}
-          className="text-xl text-violet-100 mb-10 leading-relaxed"
+          className="text-emerald-100 text-lg mb-10 max-w-xl mx-auto leading-relaxed"
         >
-          Join 500+ schools already using EduFlow to streamline operations and
-          improve efficiency.
+          Join 500+ schools already saving time, reducing errors, and keeping parents happy with EduFlow.
+          14-day full-access trial. No credit card. Cancel anytime.
         </motion.p>
 
         <motion.div
-          variants={fadeUp}
-          custom={2}
-          initial="hidden"
+          variants={fadeUp} custom={2} initial="hidden"
           animate={inView ? "visible" : "hidden"}
           className="flex flex-col sm:flex-row gap-4 justify-center"
         >
-          <motion.a
-            href="#"
-            whileHover={{ scale: 1.04 }}
-            whileTap={{ scale: 0.97 }}
-            className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white hover:bg-slate-50 text-violet-600 font-semibold rounded-lg shadow-xl transition-colors"
-          >
-            Start Free 14-Day Trial
-            <ArrowRight className="w-5 h-5" />
-          </motion.a>
-          <motion.a
-            href="#"
-            whileHover={{ scale: 1.04 }}
-            whileTap={{ scale: 0.97 }}
-            className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-transparent border-2 border-white hover:bg-white/10 text-white font-semibold rounded-lg transition-all"
-          >
-            <Calendar className="w-5 h-5" />
-            Schedule a Demo
-          </motion.a>
+          <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
+            <Link
+              href="/register"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white hover:bg-slate-50 text-emerald-700 font-black rounded-xl shadow-2xl transition-colors text-base"
+            >
+              Register Your School Free
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </motion.div>
+          <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
+            <Link
+              href="/login"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-transparent border-2 border-white/40 hover:border-white/80 text-white font-bold rounded-xl transition-all text-base"
+            >
+              Already have an account? Login
+            </Link>
+          </motion.div>
         </motion.div>
 
         <motion.p
-          variants={fadeUp}
-          custom={3}
-          initial="hidden"
+          variants={fadeUp} custom={3} initial="hidden"
           animate={inView ? "visible" : "hidden"}
-          className="text-violet-100 text-sm mt-6"
+          className="text-emerald-200/70 text-xs mt-8"
         >
-          No credit card required · Cancel anytime · 24/7 support
+          No credit card · No lock-in contract · 24/7 support
         </motion.p>
       </div>
     </section>
@@ -1005,49 +939,87 @@ function CTA() {
 
 // ─── Footer ───────────────────────────────────────────────────────────────────
 
-const footerCols = [
+const footerLinks = [
   {
     title: "Product",
-    links: ["Features", "Pricing", "Security", "Integrations"],
+    links: [
+      { label: "Features", href: "#features" },
+      { label: "How It Works", href: "#how-it-works" },
+      { label: "Pricing", href: "#pricing" },
+      { label: "Changelog", href: "#" },
+    ],
   },
-  { title: "Company", links: ["About Us", "Blog", "Careers", "Contact"] },
+  {
+    title: "Company",
+    links: [
+      { label: "About Us", href: "#" },
+      { label: "Blog", href: "#" },
+      { label: "Careers", href: "#" },
+      { label: "Contact", href: "#" },
+    ],
+  },
   {
     title: "Legal",
-    links: ["Privacy Policy", "Terms of Service", "Cookie Policy", "GDPR"],
+    links: [
+      { label: "Privacy Policy", href: "#" },
+      { label: "Terms of Service", href: "#" },
+      { label: "Cookie Policy", href: "#" },
+      { label: "Data Processing", href: "#" },
+    ],
   },
 ] as const;
 
-const socialIcons: LucideIcon[] = [Twitter, Facebook, Linkedin, Instagram];
+const socialLinks = [
+  { icon: Twitter, href: "#", label: "Twitter" },
+  { icon: Facebook, href: "#", label: "Facebook" },
+  { icon: Linkedin, href: "#", label: "LinkedIn" },
+  { icon: Instagram, href: "#", label: "Instagram" },
+] as const;
 
 function Footer() {
   return (
-    <footer className="bg-slate-900 text-slate-300 py-16 px-4 sm:px-6 lg:px-8">
+    <footer className="bg-slate-950 text-slate-400 py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        <div className="grid md:grid-cols-4 gap-10 mb-10">
-          <div>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-violet-600 rounded-xl flex items-center justify-center text-white font-bold text-xl">
-                E
+        <div className="grid md:grid-cols-5 gap-10 mb-12">
+          {/* Brand */}
+          <div className="md:col-span-2">
+            <Link href="/" className="flex items-center gap-2.5 mb-4">
+              <div className="w-9 h-9 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center">
+                <School className="w-5 h-5 text-white" />
               </div>
-              <span className="font-bold text-2xl text-white">EduFlow</span>
-            </div>
-            <p className="text-slate-400 text-sm leading-relaxed">
-              Modern school management made simple. Trusted by 500+ schools
-              worldwide.
+              <span className="font-black text-xl text-white tracking-tight">
+                Edu<span className="text-emerald-400">Flow</span>
+              </span>
+            </Link>
+            <p className="text-sm text-slate-500 leading-relaxed mb-6 max-w-xs">
+              The all-in-one school management platform built for African schools. Manage attendance, fees, results, and parents — all in one place.
             </p>
+
+            <div className="space-y-2 text-sm">
+              <div className="flex items-center gap-2">
+                <Mail className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                <span>support@eduflow.app</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Phone className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                <span>+234 800 000 0000</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                <span>Lagos, Nigeria</span>
+              </div>
+            </div>
           </div>
 
-          {footerCols.map((col) => (
+          {/* Links */}
+          {footerLinks.map((col) => (
             <div key={col.title}>
-              <h3 className="font-semibold text-white mb-4">{col.title}</h3>
-              <ul className="space-y-3 text-sm">
+              <h3 className="font-bold text-white text-sm mb-4">{col.title}</h3>
+              <ul className="space-y-3">
                 {col.links.map((l) => (
-                  <li key={l}>
-                    <a
-                      href="#"
-                      className="text-slate-400 hover:text-white transition-colors"
-                    >
-                      {l}
+                  <li key={l.label}>
+                    <a href={l.href} className="text-sm text-slate-500 hover:text-white transition-colors">
+                      {l.label}
                     </a>
                   </li>
                 ))}
@@ -1057,19 +1029,19 @@ function Footer() {
         </div>
 
         <div className="border-t border-slate-800 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-slate-400">
-            &copy; 2024 EduFlow. All rights reserved.
+          <p className="text-xs text-slate-600">
+            &copy; {new Date().getFullYear()} EduFlow. All rights reserved. Built with ❤️ for African schools.
           </p>
-          <div className="flex items-center gap-5">
-            {socialIcons.map((Icon, i) => (
+          <div className="flex items-center gap-4">
+            {socialLinks.map(({ icon: Icon, href, label }) => (
               <motion.a
-                key={i}
-                href="#"
+                key={label}
+                href={href}
                 whileHover={{ scale: 1.2 }}
-                className="text-slate-400 hover:text-white transition-colors"
-                aria-label={`Social link ${i + 1}`}
+                aria-label={label}
+                className="text-slate-600 hover:text-white transition-colors"
               >
-                <Icon className="w-5 h-5" />
+                <Icon className="w-4 h-4" />
               </motion.a>
             ))}
           </div>
@@ -1081,13 +1053,13 @@ function Footer() {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-export default function EduFlowPage() {
+export default function LandingPage() {
   return (
-    <main className="min-h-screen font-sans antialiased">
+    <main className="min-h-screen">
       <Navbar />
       <Hero />
       <Features />
-      <Benefits />
+      <HowItWorks />
       <Testimonials />
       <Pricing />
       <FAQ />
