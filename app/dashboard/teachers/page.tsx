@@ -200,7 +200,7 @@ function MultiSelect({ label, options, selected, onChange }: {
               <button key={opt} type="button" onClick={() => toggle(opt)}
                 className="w-full flex items-center justify-between px-3.5 py-2 hover:bg-slate-50 text-sm text-slate-700 transition-colors">
                 {opt}
-                {selected.includes(opt) && <Check className="w-4 h-4 text-emerald-600" />}
+                {/* {selected.includes(opt) && <Check className="w-4 h-4 text-emerald-600" />} */}
               </button>
             ))}
           </motion.div>
