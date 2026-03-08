@@ -7,7 +7,7 @@ import {
   CreditCard, Zap, AlertTriangle, CheckCircle, Eye, EyeOff,
   Loader2, Save, RefreshCw, Trash2, Upload, Camera,
   Mail, Phone, MapPin, ExternalLink, ToggleLeft, ToggleRight,
-  Server, Database, Key, Webhook,
+  Server, Database, Key, Webhook,BarChart
 } from "lucide-react";
 import { SuperSidebar } from "../page";
 
