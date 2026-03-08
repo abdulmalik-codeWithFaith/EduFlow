@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+
 import {
   School,
   Eye,
@@ -18,7 +19,6 @@ import {
   BarChart3,
 } from "lucide-react";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
 
 interface FormState {
   email: string;
@@ -32,13 +32,11 @@ interface FormErrors {
   general?: string;
 }
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function validateEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-// ─── Input Component ──────────────────────────────────────────────────────────
 
 function InputField({
   id,
@@ -242,7 +240,7 @@ export default function LoginPage() {
     await new Promise((r) => setTimeout(r, 1800));
     setLoading(false);
     setSuccess(true);
-
+    // router.push('/dashboard')
     // In production: call your auth API, then redirect based on role
     // e.g. router.push('/dashboard') or '/admin' or '/teacher'
   };
